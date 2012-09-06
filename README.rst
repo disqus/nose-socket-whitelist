@@ -11,3 +11,19 @@ offending test to fail.
 
 ``socketwhitelist.plugins.ErroringSocketWhitelistPlugin``
     causes the offending test to fail with a ``SocketError``
+
+Installation
+------------
+
+The plugin package is available from
+`PyPI <http://pypi.python.org/pypi/nose-socket-whitelist/>`_ as
+``nose-socket-whitelist``.
+
+Using pip::
+
+    pip install -U nose-socket-whitelist
+
+or with setuptools/distribute::
+
+    easy_install -U nose-socket-whitelist
+
