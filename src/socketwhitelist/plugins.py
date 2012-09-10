@@ -74,7 +74,7 @@ class SocketWhitelistPlugin(Plugin):
             are opened to non-whitelisted sockets.
             """
             results = self._getaddrinfo(host, port, *args, **kwargs)
-            if not any((self.is_whitelisted(addrinfo) for addrinfo in results)):
+            if not any(self.is_whitelisted(addrinfo) for addrinfo in results):
                 self.handle_nonwhitelisted_socket_connection(host, port)
             return results
 
@@ -91,7 +91,8 @@ class SocketWhitelistPlugin(Plugin):
 
     def is_whitelisted(self, addrinfo):
         """
-        Returns if a result of ``socket.getaddrinfo`` is in the socket address whitelist.
+        Returns if a result of ``socket.getaddrinfo`` is in the socket address
+        whitelist.
         """
         # For details about the ``getaddrinfo`` struct, see the Python docs:
         # http://docs.python.org/library/socket.html#socket.getaddrinfo
@@ -126,9 +127,11 @@ class LoggingSocketWhitelistPlugin(SocketWhitelistPlugin):
         address = '%s:%s' % (host, port)
         self.socket_warnings[str(self.test)].append(address)
         if self.trace:
-            print >> self.stream, '\n', 'NON-WHITELISTED SOCKET OPENED: %s' % address
-            print >> self.stream, 'in test: %s' % str(self.test)
-            print >> self.stream, ''.join(traceback.format_list(traceback.extract_stack(limit=self.trace)))
+            stack = traceback.extract_stack(limit=self.trace)
+            print >> self.stream, '\n', \
+                'NON-WHITELISTED SOCKET OPENED: %s' % address, \
+                'in test: %s' % str(self.test), \
+                ''.join(traceback.format_list(stack))
 
     def report(self):
         """
@@ -140,7 +143,8 @@ class LoggingSocketWhitelistPlugin(SocketWhitelistPlugin):
             in self.socket_warnings.itervalues()))
 
         def format_test_statistics(test, counter):
-            return "%s:\n%s" % (test, '\n'.join('  - %s: %s' % (socket, count) for socket, count in counter.iteritems()))
+            return "%s:\n%s" % (test, '\n'.join('  - %s: %s' % (socket, count)
+                for socket, count in counter.iteritems()))
 
         def format_statistics(aggregations):
             return '\n'.join(format_test_statistics(test, counter)
@@ -160,4 +164,5 @@ class ErroringSocketWhitelistPlugin(SocketWhitelistPlugin):
     socket to a destination that is not on the socket address whitelist.
     """
     def handle_nonwhitelisted_socket_connection(self, host, port):
-        raise SocketError('Invalid attempt to access non-whitelisted socket: %s:%s' % (host, port))
+        raise SocketError('Invalid attempt to access non-whitelisted '
+            'socket: %s:%s' % (host, port))

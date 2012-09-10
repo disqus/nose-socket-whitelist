@@ -1,8 +1,22 @@
+import os
 import sys
 
 from setuptools import find_packages, setup
 
-from socketwhitelist import __version__
+
+PACKAGE_DIR = 'src'
+
+
+def get_version():
+    from socketwhitelist import __version__
+    return '.'.join(map(str, __version__))
+
+
+try:
+    version = get_version()
+except ImportError:
+    sys.path.append(os.path.join(os.path.dirname(__file__), PACKAGE_DIR))
+    version = get_version()
 
 
 try:
@@ -21,12 +35,13 @@ if 'nosetests' in sys.argv[1:]:
 
 setup(
     name='nose-socket-whitelist',
-    version='.'.join(map(str, __version__)),
+    version=version,
     author='ted kaemming',
     author_email='ted@disqus.com',
     url='https://github.com/disqus/nose-socket-whitelist',
     license='Apache License 2.0',
-    packages=find_packages(),
+    package_dir={'': PACKAGE_DIR},
+    packages=find_packages(PACKAGE_DIR),
     install_requires=install_requires,
     tests_require=tests_require,
     setup_requires=setup_requires,
