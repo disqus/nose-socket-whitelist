@@ -1,6 +1,9 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import socket
 import unittest
-from urllib import urlopen
+from urllib.request import urlopen
 
 from socketwhitelist.plugins import (LOCALHOST_IPV4, LOCALHOST_IPV6, SocketError,
     ErroringSocketWhitelistPlugin, LoggingSocketWhitelistPlugin)

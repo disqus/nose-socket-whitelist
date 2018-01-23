@@ -25,7 +25,7 @@ except ImportError:
     pass
 
 
-install_requires = ['nose']
+install_requires = ['nose', 'future']
 tests_require = ['nose']
 
 setup_requires = []
