@@ -47,4 +47,9 @@ setup(
     setup_requires=setup_requires,
     zip_safe=False,
     test_suite='nose.collector',
+    classifiers=[
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+	],
 )
