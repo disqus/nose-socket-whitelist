@@ -130,9 +130,9 @@ class LoggingSocketWhitelistPlugin(SocketWhitelistPlugin):
         self.socket_warnings[str(self.test)].append(address)
         if self.trace:
             stack = traceback.extract_stack(limit=self.trace)
-            print('\n', \
-                'NON-WHITELISTED SOCKET OPENED: %s' % address, \
-                'in test: %s' % str(self.test), \
+            print('\n',
+                'NON-WHITELISTED SOCKET OPENED: %s' % address,
+                'in test: %s' % str(self.test),
                 ''.join(traceback.format_list(stack)), file=self.stream)
 
     def report(self):
@@ -155,7 +155,8 @@ class LoggingSocketWhitelistPlugin(SocketWhitelistPlugin):
         # Only print the report if there are actually things to report.
         if aggregations:
             print('=' * 70, file=self.stream)
-            print('NON-WHITELISTED SOCKETS OPENED: %s' % total, file=self.stream)
+            print('NON-WHITELISTED SOCKETS OPENED: %s' % total,
+                  file=self.stream)
             print('-' * 70, file=self.stream)
             print(format_statistics(aggregations), file=self.stream)
 
