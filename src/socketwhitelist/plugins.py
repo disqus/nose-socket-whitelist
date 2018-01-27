@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import str
 __license__ = """
 Copyright 2012 DISQUS
 
@@ -56,7 +58,7 @@ class Counter(defaultdict):
 
 class SocketWhitelistPlugin(Plugin):
     enabled = True
-    score = sys.maxint  # execute as soon as possible
+    score = sys.maxsize  # execute as soon as possible
     socket_address_whitelist = LOCALHOST_IPV4 + LOCALHOST_IPV6
 
     # If `configure` and `options` are not set on the class, nose assumes this
@@ -128,34 +130,35 @@ class LoggingSocketWhitelistPlugin(SocketWhitelistPlugin):
         self.socket_warnings[str(self.test)].append(address)
         if self.trace:
             stack = traceback.extract_stack(limit=self.trace)
-            print >> self.stream, '\n', \
-                'NON-WHITELISTED SOCKET OPENED: %s' % address, \
-                'in test: %s' % str(self.test), \
-                ''.join(traceback.format_list(stack))
+            print('\n',
+                'NON-WHITELISTED SOCKET OPENED: %s' % address,
+                'in test: %s' % str(self.test),
+                ''.join(traceback.format_list(stack)), file=self.stream)
 
     def report(self):
         """
         Performs rollups, prints report of sockets opened.
         """
         aggregations = dict((test, Counter().rollup(values))
-            for test, values in self.socket_warnings.iteritems())
+            for test, values in self.socket_warnings.items())
         total = sum((len(warnings) for warnings
-            in self.socket_warnings.itervalues()))
+            in self.socket_warnings.values()))
 
         def format_test_statistics(test, counter):
             return "%s:\n%s" % (test, '\n'.join('  - %s: %s' % (socket, count)
-                for socket, count in counter.iteritems()))
+                for socket, count in counter.items()))
 
         def format_statistics(aggregations):
             return '\n'.join(format_test_statistics(test, counter)
-                for test, counter in aggregations.iteritems())
+                for test, counter in aggregations.items())
 
         # Only print the report if there are actually things to report.
         if aggregations:
-            print >> self.stream, '=' * 70
-            print >> self.stream, 'NON-WHITELISTED SOCKETS OPENED: %s' % total
-            print >> self.stream, '-' * 70
-            print >> self.stream, format_statistics(aggregations)
+            print('=' * 70, file=self.stream)
+            print('NON-WHITELISTED SOCKETS OPENED: %s' % total,
+                  file=self.stream)
+            print('-' * 70, file=self.stream)
+            print(format_statistics(aggregations), file=self.stream)
 
 
 class ErroringSocketWhitelistPlugin(SocketWhitelistPlugin):
