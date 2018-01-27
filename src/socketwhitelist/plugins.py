@@ -118,9 +118,14 @@ class LoggingSocketWhitelistPlugin(SocketWhitelistPlugin):
         super(LoggingSocketWhitelistPlugin, self).begin()
 
     def options(self, parser, env):
-        parser.add_option('--socket-trace', type=int, default=False,
-            metavar='NUM_FRAMES', help='number of stack frames to print to '
-                'stderr when an invalid socket connection is encountered')
+        parser.add_option(
+            '--socket-trace',
+            type=int,
+            default=False,
+            metavar='NUM_FRAMES',
+            help='number of stack frames to print to stderr when an invalid '
+                 'socket connection is encountered'
+        )
 
     def configure(self, options, conf):
         self.trace = options.socket_trace
@@ -130,33 +135,49 @@ class LoggingSocketWhitelistPlugin(SocketWhitelistPlugin):
         self.socket_warnings[str(self.test)].append(address)
         if self.trace:
             stack = traceback.extract_stack(limit=self.trace)
-            print('\n',
+            print(
+                '\n',
                 'NON-WHITELISTED SOCKET OPENED: %s' % address,
                 'in test: %s' % str(self.test),
-                ''.join(traceback.format_list(stack)), file=self.stream)
+                ''.join(traceback.format_list(stack)),
+                file=self.stream
+            )
 
     def report(self):
         """
         Performs rollups, prints report of sockets opened.
         """
-        aggregations = dict((test, Counter().rollup(values))
-            for test, values in self.socket_warnings.items())
-        total = sum((len(warnings) for warnings
-            in self.socket_warnings.values()))
+        aggregations = dict(
+            (test, Counter().rollup(values))
+            for test, values in self.socket_warnings.items()
+        )
+        total = sum(
+            len(warnings)
+            for warnings in self.socket_warnings.values()
+        )
 
         def format_test_statistics(test, counter):
-            return "%s:\n%s" % (test, '\n'.join('  - %s: %s' % (socket, count)
-                for socket, count in counter.items()))
+            return "%s:\n%s" % (
+                test,
+                '\n'.join(
+                    '  - %s: %s' % (socket, count)
+                    for socket, count in counter.items()
+                )
+            )
 
         def format_statistics(aggregations):
-            return '\n'.join(format_test_statistics(test, counter)
-                for test, counter in aggregations.items())
+            return '\n'.join(
+                format_test_statistics(test, counter)
+                for test, counter in aggregations.items()
+            )
 
         # Only print the report if there are actually things to report.
         if aggregations:
             print('=' * 70, file=self.stream)
-            print('NON-WHITELISTED SOCKETS OPENED: %s' % total,
-                  file=self.stream)
+            print(
+                'NON-WHITELISTED SOCKETS OPENED: %s' % total,
+                file=self.stream,
+            )
             print('-' * 70, file=self.stream)
             print(format_statistics(aggregations), file=self.stream)
 
@@ -167,5 +188,7 @@ class ErroringSocketWhitelistPlugin(SocketWhitelistPlugin):
     socket to a destination that is not on the socket address whitelist.
     """
     def handle_nonwhitelisted_socket_connection(self, host, port):
-        raise SocketError('Invalid attempt to access non-whitelisted '
-            'socket: %s:%s' % (host, port))
+        raise SocketError(
+            'Invalid attempt to access non-whitelisted '
+            'socket: %s:%s' % (host, port)
+        )
